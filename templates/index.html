@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Sketch Generator 🎨</title>
+  <script>
+    function updateDownloadLink(path) {
+      const dlBtn = document.getElementById("download-btn");
+      dlBtn.href = path;
+      dlBtn.classList.remove("hidden");
+    }
+  </script>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #f3f4f6;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+    .card {
+      background: white;
+      padding: 2rem;
+      border-radius: 1rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      text-align: center;
+      width: 400px;
+    }
+    .hidden {
+      display: none;
+    }
+    #download-btn {
+      padding: 0.5rem 1rem;
+      background: #2563eb;
+      color: white;
+      text-decoration: none;
+      border-radius: 0.5rem;
+      font-weight: bold;
+    }
+    #download-btn:hover {
+      background: #1d4ed8;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>Sketch Generator 🎨</h2>
+    <form id="upload-form" enctype="multipart/form-data">
+      <input type="file" name="file" id="file" required />
+      <br /><br />
+      <label>Sketch Type:</label>
+      <select name="intensity" id="intensity">
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+      </select>
+      <br /><br />
+      <button type="submit">Upload & Convert</button>
+    </form>
+
+    <h3>Sketch Output:</h3>
+    <img id="output-image" src="" width="300" style="margin-bottom: 1rem;" />
+    <br />
+    <a id="download-btn" class="hidden" href="#" download="sketch.png">⬇️ Download Sketch</a>
+  </div>
+
+  <script>
+    const form = document.getElementById("upload-form");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const formData = new FormData(form);
+
+      const res = await fetch("/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!res.ok) {
+        alert("Error generating sketch!");
+        return;
+      }
+
+      const blob = await res.blob();
+      const objectUrl = URL.createObjectURL(blob);
+
+      document.getElementById("output-image").src = objectUrl;
+      updateDownloadLink(objectUrl);
+    });
+  </script>
+</body>
+</html>
